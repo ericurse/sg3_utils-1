@@ -546,6 +546,7 @@ dolunscan()
       printf "\r\e[A";
       # Optimization: if lun==0, stop here (only if in non-remove mode)
       if test $lun = 0 -a -z "$remove" -a $optscan = 1; then 
+        # To do: fix this incorrect break statement.
         break;
       fi
     else 
