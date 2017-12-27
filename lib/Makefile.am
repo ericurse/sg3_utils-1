@@ -52,7 +52,7 @@ lib_LTLIBRARIES = libsgutils2.la
 
 libsgutils2_la_LDFLAGS = -version-info 2:0:0 -no-undefined
 
-libsgutils2_la_LIBADD = @GETOPT_O_FILES@ @os_libs@
+libsgutils2_la_LIBADD = @GETOPT_O_FILES@
 libsgutils2_la_DEPENDENCIES = @GETOPT_O_FILES@
 
 
