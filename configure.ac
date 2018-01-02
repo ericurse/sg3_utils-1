@@ -25,8 +25,14 @@ AC_CHECK_FUNCS(posix_fadvise)
 AC_CHECK_FUNCS(posix_memalign)
 AC_CHECK_FUNCS(sysconf)
 AC_CHECK_FUNCS(lseek64)
-AC_SEARCH_LIBS([pthread_cancel], [pthread], [AC_DEFINE(HAVE_PTHREAD_CANCEL, 1, [Found pthread_cancel])], [])
-AC_SEARCH_LIBS([pthread_kill], [pthread], [AC_DEFINE(HAVE_PTHREAD_KILL, 1, [Found pthread_kill])], [])
+SAVED_LIBS=$LIBS
+AC_SEARCH_LIBS([pthread_create], [pthread])
+# AC_SEARCH_LIBS adds libraries at the start of $LIBS so remove $SAVED_LIBS
+# from the end of $LIBS.
+pthread_lib=${LIBS%${SAVED_LIBS}}
+AC_CHECK_FUNCS([pthread_cancel pthread_kill])
+LIBS=$SAVED_LIBS
+AC_SUBST(PTHREAD_LIB, [$pthread_lib])
 AC_SUBST(GETOPT_O_FILES)
 
 AC_CANONICAL_HOST

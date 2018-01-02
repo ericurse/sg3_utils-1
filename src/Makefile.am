@@ -86,7 +86,7 @@ sg_modes_LDADD = ../lib/libsgutils2.la @os_libs@
 
 sg_opcodes_LDADD = ../lib/libsgutils2.la @os_libs@
 
-sgp_dd_LDADD = ../lib/libsgutils2.la @os_libs@ -lpthread
+sgp_dd_LDADD = ../lib/libsgutils2.la @os_libs@ @PTHREAD_LIB@
 
 sg_persist_LDADD = ../lib/libsgutils2.la @os_libs@
 
