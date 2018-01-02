@@ -181,6 +181,7 @@ static int sg_finish_io(bool wr, Rq_elem * rep, pthread_mutex_t * a_mutp);
 
 static pthread_mutex_t strerr_mut = PTHREAD_MUTEX_INITIALIZER;
 
+static bool shutting_down = false;
 static bool do_sync = false;
 static bool do_time = false;
 static Rq_coll rcoll;
@@ -271,14 +272,6 @@ install_handler(int sig_num, void (*sig_handler) (int sig))
         sigaction (sig_num, &sigact, NULL);
     }
 }
-
-#ifdef SG_LIB_ANDROID
-static void
-thread_exit_handler(int sig)
-{
-    pthread_exit(0);
-}
-#endif
 
 /* Make safe_strerror() thread safe */
 static char *
@@ -478,6 +471,8 @@ sig_listen_thread(void * v_clp)
 
     while (1) {
         sigwait(&signal_set, &sig_number);
+        if (shutting_down)
+                break;
         if (SIGINT == sig_number) {
             pr2serr(ME "interrupted by SIGINT\n");
             guarded_stop_both(clp);
@@ -1155,15 +1150,7 @@ main(int argc, char * argv[])
     int in_sect_sz, out_sect_sz, status, n, flags;
     void * vp;
     char ebuff[EBUFF_SZ];
-#if SG_LIB_ANDROID
-    struct sigaction actions;
 
-    memset(&actions, 0, sizeof(actions));
-    sigemptyset(&actions.sa_mask);
-    actions.sa_flags = 0;
-    actions.sa_handler = thread_exit_handler;
-    sigaction(SIGUSR1, &actions, NULL);
-#endif
     memset(&rcoll, 0, sizeof(Rq_coll));
     rcoll.bpt = DEF_BLOCKS_PER_TRANSFER;
     rcoll.in_type = FT_OTHER;
@@ -1645,13 +1632,9 @@ main(int argc, char * argv[])
         }
     }
 
-#if SG_LIB_ANDROID
-    /* Android doesn't have pthread_cancel() so use pthread_kill() instead.
-     * Also there is no need to link with -lpthread in Android */
-    status = pthread_kill(sig_listen_thread_id, SIGUSR1);
-#else
-    status = pthread_cancel(sig_listen_thread_id);
-#endif
+    shutting_down = true;
+
+    status = pthread_kill(sig_listen_thread_id, SIGINT);
     if (0 != status) err_exit(status, "pthread_cancel");
     if (STDIN_FILENO != rcoll.infd)
         close(rcoll.infd);
