@@ -7,12 +7,12 @@ AM_CONFIG_HEADER(config.h)
 AC_PROG_CC
 # AC_PROG_CXX
 AC_PROG_INSTALL
-		
-# Adding libtools to the build seems to bring in C++ environment
-AC_PROG_LIBTOOL
 
 # AM_PROG_AR is supported and needed since automake v1.12+
 ifdef([AM_PROG_AR], [AM_PROG_AR], []) 
+
+# Adding libtools to the build seems to bring in C++ environment
+AC_PROG_LIBTOOL
 
 # check for headers
 AC_HEADER_STDC
