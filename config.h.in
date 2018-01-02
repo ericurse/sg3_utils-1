@@ -105,7 +105,7 @@
 /* sg3_utils on FreeBSD */
 #undef SG_LIB_FREEBSD
 
-/* assume sg3_utils on linux */
+/* sg3_utils on linux */
 #undef SG_LIB_LINUX
 
 /* also MinGW environment */

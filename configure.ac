@@ -39,41 +39,25 @@ AC_CANONICAL_HOST
 
 AC_DEFINE_UNQUOTED(SG_LIB_BUILD_HOST, "${host}", [sg3_utils Build Host])
 
+check_for_linux_nvme_headers() {
+	AC_CHECK_HEADERS([linux/nvme_ioctl.h], [AC_DEFINE(HAVE_NVME, 1, [Found NVMe])], [], [])
+	AC_CHECK_HEADERS([linux/types.h linux/bsg.h linux/kdev_t.h], [], [],
+		     [[#ifdef HAVE_LINUX_TYPES_H
+		     # include <linux/types.h>
+		     #endif
+		     ]])
+}
+
 case "${host}" in
-        *-*-linux-gnu*)
-		AC_DEFINE_UNQUOTED(SG_LIB_LINUX, 1, [sg3_utils on linux])
-                AC_SUBST([os_cflags], [''])
-                AC_SUBST([os_libs], [''])
-		AC_CHECK_HEADERS([linux/nvme_ioctl.h], [AC_DEFINE(HAVE_NVME, 1, [Found NVMe])], [], [])
-		AC_CHECK_HEADERS([linux/types.h linux/bsg.h linux/kdev_t.h], [], [],
-		     [[#ifdef HAVE_LINUX_TYPES_H
-		     # include <linux/types.h>
-		     #endif
-		     ]]) ;;
-        *-*-linux*)
-		AC_DEFINE_UNQUOTED(SG_LIB_LINUX, 1, [sg3_utils on linux])
-                AC_SUBST([os_cflags], [''])
-                AC_SUBST([os_libs], [''])
-		AC_CHECK_HEADERS([linux/nvme_ioctl.h], [AC_DEFINE(HAVE_NVME, 1, [Found NVMe])], [], [])
-		AC_CHECK_HEADERS([linux/types.h linux/bsg.h linux/kdev_t.h], [], [],
-		     [[#ifdef HAVE_LINUX_TYPES_H
-		     # include <linux/types.h>
-		     #endif
-		     ]]) ;;
 	*-*-android*)
 		AC_DEFINE_UNQUOTED(SG_LIB_ANDROID, 1, [sg3_utils on android])
 		AC_DEFINE_UNQUOTED(SG_LIB_LINUX, 1, [sg3_utils on linux])
                 AC_SUBST([os_cflags], [''])
                 AC_SUBST([os_libs], [''])
-		AC_CHECK_HEADERS([linux/nvme_ioctl.h], [AC_DEFINE(HAVE_NVME, 1, [Found NVMe])], [], [])
-		AC_CHECK_HEADERS([linux/types.h linux/bsg.h linux/kdev_t.h], [], [],
-		     [[#ifdef HAVE_LINUX_TYPES_H
-		     # include <linux/types.h>
-		     #endif
-		     ]]) ;;
+		check_for_linux_nvme_headers;;
         *-*-freebsd*|*-*-kfreebsd*-gnu*)
 		AC_DEFINE_UNQUOTED(SG_LIB_FREEBSD, 1, [sg3_utils on FreeBSD])
-		AC_DEFINE(HAVE_NVME, 1, ['Found NVMe'])
+		AC_DEFINE(HAVE_NVME, 1, [Found NVMe])
                 AC_SUBST([os_cflags], [''])
                 AC_SUBST([os_libs], ['-lcam']);;
         *-*-solaris*)
@@ -93,16 +77,11 @@ case "${host}" in
 		AC_DEFINE_UNQUOTED(SG_LIB_MINGW, 1, [also MinGW environment])
                 AC_SUBST([os_cflags], [''])
                 AC_SUBST([os_libs], ['']) ;;
-        *)
-		AC_DEFINE_UNQUOTED(SG_LIB_LINUX, 1, [assume sg3_utils on linux])
+        *-*-linux-gnu* | *-*-linux* | *)
+                AC_DEFINE_UNQUOTED(SG_LIB_LINUX, 1, [sg3_utils on linux])
                 AC_SUBST([os_cflags], [''])
                 AC_SUBST([os_libs], [''])
-		AC_CHECK_HEADERS([linux/nvme_ioctl.h], [AC_DEFINE(HAVE_NVME, 1, [Found NVMe])], [], [])
-		AC_CHECK_HEADERS([linux/types.h linux/bsg.h linux/kdev_t.h], [], [],
-		     [[#ifdef HAVE_LINUX_TYPES_H
-		     # include <linux/types.h>
-		     #endif
-		     ]]) ;;
+                check_for_linux_nvme_headers;;
 esac
 
 # Define platform-specific symbol.
