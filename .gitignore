@@ -78,11 +78,13 @@ src/sg_sat_read_gplog
 src/sg_sat_set_features
 src/sg_scan
 src/sg_scan.c
+src/sg_seek
 src/sg_senddiag
 src/sg_ses
 src/sg_ses_microcode
 src/sg_start
 src/sg_stpg
+src/sg_stream_ctl
 src/sg_sync
 src/sg_test_rwbuf
 src/sg_timestamp
